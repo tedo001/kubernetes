@@ -1,0 +1,115 @@
+Task 3: Deploying a StatefulSet
+A StatefulSet manages the deployment and scaling of a set of pods, and maintains a sticky identity for each of their Pods, ensuring that each Pod has a persistent identity and storage.
+
+Create and open a file named statefulset.yaml in edit mode.
+1
+  touch statefulset.yaml
+
+Copied!
+
+Wrap Toggled!
+
+
+Open statefulset.yaml, and add the following code, and save the file:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+   apiVersion: apps/v1
+   kind: StatefulSet
+   metadata:
+     name: my-statefulset
+   spec:
+     serviceName: "nginx"
+     replicas: 3
+     selector:
+       matchLabels:
+         app: nginx
+     template:
+       metadata:
+         labels:
+           app: nginx
+       spec:
+         containers:
+         - name: nginx
+           image: nginx
+           ports:
+           - containerPort: 80
+             name: web
+     volumeClaimTemplates:
+     - metadata:
+         name: www
+       spec:
+         accessModes: [ "ReadWriteOnce" ]
+         resources:
+           requests:
+             storage: 1Gi
+
+Copied!
+
+Wrap Toggled!
+Explanation:
+apiVersion: apps/v1 & kind: StatefulSet: Establishes that this resource is a StatefulSet, leveraging the stable, production‑ready apps/v1 API.
+
+metadata.name: my-statefulset: Assigns a human‑readable identifier to the StatefulSet.
+
+spec.serviceName: "nginx": Binds the StatefulSet to a headless Service named “nginx,” ensuring each pod has a stable network identity.
+
+spec.replicas: 3: Orchestrates three pod replicas, each with its own persistent identity.
+
+spec.selector.matchLabels: Directs the StatefulSet to manage pods labeled app: nginx.
+
+spec.template: Defines the pod blueprint:
+
+metadata.labels: app: nginx ensures new pods carry the matching label.
+spec.containers configures the nginx container on port 80, named “web.”
+volumeClaimTemplates: Automates the creation of a PersistentVolumeClaim named www for each replica, each requesting 1 Gi of storage with ReadWriteOnce access.
+
+Apply the StatefulSet configuration.
+1
+   kubectl apply -f statefulset.yaml
+
+Copied!
+
+Wrap Toggled!
+staefulsetapply.png
+
+This command tells Kubernetes to create the resources defined in the YAML file.
+
+Verify that the StatefulSet is created.
+1
+   kubectl get statefulsets
+
+Copied!
+
+Wrap Toggled!
+
+
+After applying the StatefulSet, you should verify that the StatefulSet has been created and is running. This can be done using the kubectl get command.
+
+By following these steps, you can successfull
